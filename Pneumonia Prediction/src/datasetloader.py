@@ -26,10 +26,10 @@ def load_data_from_directory(base_dir):
     return image_paths, labels
 
 # Specify the base directory for each split
-train_dir = "Pneumonia Prediction/Data/dataset/train"
-test_dir = "Pneumonia Prediction/Data/dataset/test"
-valid_dir = "Pneumonia Prediction/Data/dataset/valid"
-valid_mini_dir = "Pneumonia Prediction/Data/dataset/valid-mini"
+train_dir = "Pneumonia Prediction/dataset/train"
+test_dir = "Pneumonia Prediction/dataset/test"
+valid_dir = "Pneumonia Prediction/dataset/valid"
+valid_mini_dir = "Pneumonia Prediction/dataset/valid-mini"
 
 # Load data from directories
 train_image_paths, train_labels = load_data_from_directory(train_dir)

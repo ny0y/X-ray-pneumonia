@@ -14,7 +14,7 @@ transform = transforms.Compose([
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model = models.resnet18(pretrained=False)  # We do not use pretrained weights now
 model.fc = torch.nn.Linear(model.fc.in_features, 2)  # Modify for binary classification
-model.load_state_dict(torch.load("Pneumonia Prediction/Data/model trained/chest_xray_model.pth"))
+model.load_state_dict(torch.load("Pneumonia Prediction/model trained/chest_xray_model.pth"))
 model.to(device)
 model.eval()  # Set model to evaluation mode
 
@@ -43,11 +43,6 @@ def predict_image(image_path):
     return prediction
 
 # usage
-image_path = "P.jpg"  # Replace with the path image wanna predict
-prediction = predict_image(image_path)
-print(f"Predicted class: {prediction}")
-
-# usage
-image_path = "N.jpg"  # Replace with the path image wanna predict
+image_path = "Test_JPG/w.jpg"  # Replace with the path image wanna predict
 prediction = predict_image(image_path)
 print(f"Predicted class: {prediction}")

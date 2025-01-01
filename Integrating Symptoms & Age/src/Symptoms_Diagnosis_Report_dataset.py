@@ -1,5 +1,7 @@
 import pandas as pd
 import random
+from sklearn.model_selection import train_test_split
+from imblearn.over_sampling import RandomOverSampler
 
 # Provided lists
 symptoms_list = [
@@ -7,14 +9,12 @@ symptoms_list = [
     "difficulty breathing", "chills", "sore throat", "loss of appetite",
     "muscle aches", "headache", "confusion", "bluish lips or face",
     "rapid breathing", "wheezing", "sputum production", "stomach pain",
-    "vomiting", "diarrhea", "night sweats", "joint pain", "neck stiffness",
-    "nausea", "rash", "weight loss", "body aches", "malaise", "dry cough",
-    "productive cough", "blood in sputum", "hoarseness", "rapid heartbeat",
-    "shivering", "swollen lymph nodes", "yellowish skin", "congested nose",
-    "ear pain", "eye redness", "decreased urination", "paleness",
-    "irritability", "loss of smell", "loss of taste", "back pain",
-    "shoulder pain", "dizziness", "unsteady gait", "difficulty swallowing",
-    "general weakness", "chest tightness"
+    "vomiting", "diarrhea", "night sweats", "joint pain",
+    "rash", "weight loss", "dry cough",
+    "productive cough", "blood in sputum",
+    "irritability", "loss of smell", "loss of taste",
+    "difficulty swallowing",
+    "chest tightness"
 ]
 
 diagnoses_list = [
@@ -404,26 +404,86 @@ report_templates = {
     ]
 }
 
+# this is every diagnosis, having its special set of sympyoms.
+# Bacterial Pnemunoia can't have "sore throat" as a symptom
+diagnosis_to_symptoms = {
+    "Bacterial Pneumonia": ["fever", "cough", "shortness of breath", "bluish lips or face", "chest pain", "sputum production"],
+    "Viral Pneumonia": ["fatigue", "dry cough","joint pain", "sore throat", "fever", "headache"],
+    "Mycoplasma Pneumonia": ["mild fever", "joint pain", "vomiting", "dry cough", "headache", "fatigue", "sore throat"],
+    "Pneumonia NOS": ["cough", "fever", "chest pain", "shortness of breath"],
+    "Aspiration Pneumonia": ["difficulty swallowing", "chest pain", "cough with foul-smelling sputum"],
+    "Staphylococcal Pneumonia": ["high fever", "chills", "shortness of breath", "chest pain"],
+    "Klebsiella Pneumonia": ["fever", "cough with bloody sputum", "chest pain", "confusion"],
+    "Pneumocystis Pneumonia": ["dry cough", "fever", "diarrhea", "stomach pain", "difficulty breathing", "fatigue", "weight loss"],
+    "Rickettsial Pneumonia": ["fever", "rash", "headache", "muscle aches", "shortness of breath"],
+    "Eosinophilic Pneumonia": ["wheezing", "cough", "fever", "shortness of breath", "fatigue"],
+    "Ventilator-Associated Pneumonia": ["fever", "chest pain", "cough", "sputum production", "shortness of breath"],
+    "Lipid Pneumonia": ["chronic cough", "shortness of breath", "fever", "chest tightness"],
+    "Bronchopneumonia": ["fever", "productive cough", "shortness of breath", "chills"],
+    "Interstitial Pneumonia": ["persistent dry cough", "fatigue", "shortness of breath", "chest tightness"],
+    "Community-Acquired Pneumonia": ["fever", "cough", "shortness of breath", "muscle aches"],
+    "Hospital-Acquired Pneumonia": ["fever", "productive cough", "chest pain", "shortness of breath"],
+    "Gram-Negative Bacterial Pneumonia": ["high fever", "sputum production", "shortness of breath", "confusion"],
+    "Pseudomonas Pneumonia": ["fever", "cough with green sputum", "shortness of breath", "chest pain"],
+    "Fungal Pneumonia": ["cough", "weight loss", "fever", "night sweats", "shortness of breath"],
+    "Legionella Pneumonia": ["fever", "muscle aches", "cough", "shortness of breath", "confusion"],
+    "Tuberculosis-Related Pneumonia": ["chronic cough", "blood in sputum", "fever", "night sweats", "weight loss"],
+    "Chemical Pneumonia": ["cough", "chest pain", "wheezing", "shortness of breath", "throat irritation"],
+    "Postoperative Pneumonia": ["fever", "cough", "chest pain", "shortness of breath", "fatigue"],
+    "Multilobar Pneumonia": ["severe fever", "chest pain", "shortness of breath", "productive cough"],
+    "Atypical Pneumonia": ["low-grade fever", "dry cough", "headache", "fatigue", "muscle aches"],
+    "MERS-Associated Pneumonia": ["fever", "dry cough", "shortness of breath", "muscle aches"],
+    "H1N1 Pneumonia": ["high fever", "cough", "sore throat", "fatigue", "muscle aches"],
+    "COVID-19 Pneumonia": ["fever", "dry cough", "shortness of breath", "loss of smell", "loss of taste"],
+    "Pediatric Pneumonia": ["fever", "cough", "rapid breathing", "irritability", "loss of appetite"],
+    "Geriatric Pneumonia": ["confusion", "fever", "cough", "shortness of breath", "fatigue"],
+    "Immunocompromised Pneumonia": ["fever", "cough", "shortness of breath", "night sweats", "weight loss"],
+    "Neonatal Pneumonia": ["rapid breathing", "grunting sounds", "fever", "poor feeding", "cyanosis"],
+    "Chlamydial Pneumonia": ["dry cough", "sore throat", "low-grade fever", "fatigue"],
+    "Respiratory Syncytial Virus Pneumonia": ["cough", "fever", "wheezing", "nasal congestion", "shortness of breath"],
+    "Anthrax Pneumonia": ["fever", "chest pain", "cough", "shortness of breath", "fatigue"],
+    "Severe Acute Respiratory Syndrome Pneumonia": ["fever", "dry cough", "shortness of breath", "muscle aches", "chills"],
+    "Influenza Pneumonia": ["fever", "cough", "sore throat", "fatigue", "headache"],
+    "Zoonotic Pneumonia": ["fever", "cough", "shortness of breath", "exposure to animals"],
+    "Plague-Related Pneumonia": ["fever", "bloody sputum", "shortness of breath", "chest pain"],
+    "Vibrio Pneumonia": ["cough", "fever", "shortness of breath", "exposure to contaminated water"],
+    "Cystic Fibrosis-Associated Pneumonia": ["chronic cough", "thick sputum", "shortness of breath", "weight loss"],
+    "Bronchiolitis Obliterans Pneumonia": ["cough", "shortness of breath", "wheezing", "chest tightness"],
+    "Aspiration of Gastric Contents Pneumonia": ["cough", "chest pain", "shortness of breath", "difficulty swallowing"],
+    "Pneumonia Caused by Lipoid Aspiration": ["chronic cough", "shortness of breath", "fever", "chest tightness"],
+    "Pneumonia from Overdose": ["cough", "shortness of breath", "chest pain", "irregular breathing"],
+    "Sepsis-Related Pneumonia": ["fever", "chills", "cough", "shortness of breath", "confusion"],
+    "Lung Abscess Pneumonia": ["productive cough", "fever", "chest pain", "night sweats"],
+    "Opportunistic Fungal Pneumonia": ["cough", "weight loss", "fever", "shortness of breath", "night sweats"],
+    "Chronic Pneumonia": ["chronic cough", "weight loss", "fatigue", "shortness of breath"],
+    "Recurrent Pneumonia": ["fever", "cough", "shortness of breath", "history of pneumonia episodes"],
+}
 
 
-age_list = list(range(1, 90))
 
-report_data = report_templates.get(random.choice(diagnoses_list), [])
-if report_data:
-    report = random.choice(report_data)
-else:
-    report = "Default Report"
+# Diagnosis to symptoms mapping
+diagnosis_to_symptoms = {
+    "Bacterial Pneumonia": ["fever", "cough", "shortness of breath", "bluish lips or face", "chest pain", "sputum production"],
+    "Viral Pneumonia": ["fatigue", "dry cough", "joint pain", "sore throat", "fever", "headache"],
+    "Mycoplasma Pneumonia": ["mild fever", "joint pain", "vomiting", "dry cough", "headache", "fatigue", "sore throat"]
+}
 
-# Generate 10,000 rows of random data
+# Generate random data
+age_list = list(range(1, 17))
+samples = 10000
+
 random_data = [
     {
         "Age": random.choice(age_list),
-        "Symptoms": random.sample(symptoms_list, k=random.randint(1, len(symptoms_list))),
+        "Symptoms": random.sample(
+            diagnosis_to_symptoms.get(diagnosis, ["unknown symptoms"]),
+            k=random.randint(1, len(diagnosis_to_symptoms[diagnosis]))
+        ),
         "Diagnosis": diagnosis,
-        "Report": random.choice(report_templates.get(diagnosis, [])) if report_templates.get(diagnosis, []) else "No report available"
+        "Report": random.choice(report_templates.get(diagnosis, ["No report available"]))
     }
-    for _ in range(10000)
-    for diagnosis in [random.choice(diagnoses_list)]  # Ensure random diagnosis per row
+    for _ in range(samples)
+    for diagnosis in [random.choice(list(diagnosis_to_symptoms.keys()))]
 ]
 
 # Convert to DataFrame
@@ -432,22 +492,27 @@ df = pd.DataFrame(random_data)
 # Convert list of symptoms to comma-separated string
 df["Symptoms"] = df["Symptoms"].apply(lambda x: ", ".join(x))
 
-# Display the first 5 rows to check the output
+# Split into training (80%) and testing (20%)
+train_df, test_df = train_test_split(df, test_size=0.2, random_state=42)
+
+# Balance the training dataset using RandomOverSampler
+ros = RandomOverSampler(random_state=42)
+X_train_resampled, y_train_resampled = ros.fit_resample(
+    train_df[["Age", "Symptoms", "Report"]], train_df["Diagnosis"]
+)
+
+# Combine resampled data into a DataFrame
+train_df_resampled = pd.DataFrame({
+    "Age": X_train_resampled["Age"],
+    "Symptoms": X_train_resampled["Symptoms"],
+    "Report": X_train_resampled["Report"],
+    "Diagnosis": y_train_resampled
+})
+
+# Save datasets to CSV
+train_df_resampled.to_csv("Integrating Symptoms & Age/synthetic data/dataset/symptoms_diagnoses_dataset_training.csv", index=False)
+test_df.to_csv("Integrating Symptoms & Age/synthetic data/dataset/symptoms_diagnoses_dataset_testing.csv", index=False)
+
+print("Dataset saved with symptoms, reports, age, and dagnosis")
+
 print(df.head())
-
-# Check the balance of diagnoses
-diagnosis_counts = df['Diagnosis'].value_counts()
-print(diagnosis_counts)
-
-# For underrepresented diagnoses, duplicate them in the dataset (oversampling)
-min_count = diagnosis_counts.min()  # You could also choose a custom strategy to determine this
-df_balanced = df.groupby('Diagnosis', group_keys=False).apply(
-    lambda x: x.sample(min_count, replace=True)).reset_index(drop=True)
-
-print(df_balanced['Diagnosis'].value_counts())
-
-# Save to CSV
-output_path = "Integrating Symptoms & Age/synthetic data/dataset/symptoms_diagnoses_dataset_10k.csv"
-df.to_csv(output_path, index=False)
-
-output_path
