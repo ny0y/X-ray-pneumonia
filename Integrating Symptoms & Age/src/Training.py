@@ -1,5 +1,5 @@
 import pandas as pd  
-from transformers import T5Tokenizer, T5ForConditionalGeneration, Trainer, TrainingArguments, DataCollatorForSeq2Seq, TrainerCallback  
+from transformers import T5Tokenizer, T5ForConditionalGeneration, Trainer, TrainingArguments, DataCollatorForSeq2Seq  
 from torch.utils.data import Dataset, DataLoader  
 import torch  
 from tqdm import tqdm  
@@ -12,29 +12,49 @@ from Symptoms_Diagnosis_Report_dataset import diagnoses_list
 train_data = pd.read_csv('Integrating Symptoms & Age/synthetic data/dataset/symptoms_diagnoses_dataset_training.csv')
 test_data = pd.read_csv('Integrating Symptoms & Age/synthetic data/dataset/symptoms_diagnoses_dataset_testing.csv')
 
-# Inspect the data structure  
-print(train_data.head())
-print(test_data.head())
+# Check data structure  
+print("Training data structure:\n", train_data.head())
+print("Testing data structure:\n", test_data.head())
+
+# Ensure required columns exist
+required_columns = {'Age', 'Symptoms', 'Diagnosis', 'Report'}
+if not required_columns.issubset(train_data.columns) or not required_columns.issubset(test_data.columns):
+    raise ValueError(f"Missing required columns! Found in training: {train_data.columns}, testing: {test_data.columns}")
+
+# Check for missing values and handle them
+print("Checking for missing values in training data:")
+print(train_data.isnull().sum())
+print("Checking for missing values in testing data:")
+print(test_data.isnull().sum())
+
+train_data = train_data.dropna()
+test_data = test_data.dropna()
 
 # Initialize tokenizer  
-tokenizer = T5Tokenizer.from_pretrained('t5-small')
+tokenizer = T5Tokenizer.from_pretrained('t5-small', legacy=False)
 
 # Tokenize data  
 def tokenize_data(data, tokenizer, max_length=512):
-    inputs = tokenizer(
-        list(data['Age'].astype(str) + '; ' + data['Symptoms']),
-        truncation=True, padding=True, return_tensors="pt", max_length=max_length  
-    )
-    diagnosis_labels = tokenizer(
-        list(data['Diagnosis']),
-        truncation=True, padding=True, return_tensors="pt", max_length=max_length  
-    )
-    report_labels = tokenizer(
-        list(data['Report']),
-        truncation=True, padding=True, return_tensors="pt", max_length=max_length  
-    )
-    return inputs, diagnosis_labels, report_labels
+    try:
+        inputs = tokenizer(
+            list(data['Age'].astype(str) + '; ' + data['Symptoms']),
+            truncation=True, padding=True, return_tensors="pt", max_length=max_length
+        )
+        diagnosis_labels = tokenizer(
+            list(data['Diagnosis']),
+            truncation=True, padding=True, return_tensors="pt", max_length=max_length
+        )
+        report_labels = tokenizer(
+            list(data['Report']),
+            truncation=True, padding=True, return_tensors="pt", max_length=max_length
+        )
+        return inputs, diagnosis_labels, report_labels
+    except Exception as e:
+        print(f"Error during tokenization: {e}")
+        print(data.head())
+        raise
 
+# Tokenize the datasets  
 train_inputs, train_diagnosis_labels, train_report_labels = tokenize_data(train_data, tokenizer)
 test_inputs, test_diagnosis_labels, test_report_labels = tokenize_data(test_data, tokenizer)
 
@@ -82,7 +102,6 @@ training_args = TrainingArguments(
     weight_decay=0.01,
     fp16=True,  # Enable mixed-precision training for speed
 )
-
 
 # Data collator for dynamic padding  
 data_collator = DataCollatorForSeq2Seq(tokenizer=tokenizer, model=model)
