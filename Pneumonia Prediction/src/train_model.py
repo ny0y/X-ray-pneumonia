@@ -121,3 +121,4 @@ print(classification_report(all_labels, all_preds, target_names=["NORMAL", "PNEU
 
 # Save the best model
 torch.save(model.state_dict(), "Pneumonia Prediction/model trained/chest_xray_model.pth")
+torch.save(model.state_dict(), "Pneumonia Prediction/model trained/chest_xray_model.pth")
