@@ -62,8 +62,8 @@ def generate_prediction(model, tokenizer, age, symptoms):
 
 # Example usage
 if __name__ == "__main__":
-    age = 5
-    symptoms = "mild fever"
+    age = 50
+    symptoms = "grunting sounds"
     
     try:
         report = generate_prediction(model, tokenizer, age, symptoms)
