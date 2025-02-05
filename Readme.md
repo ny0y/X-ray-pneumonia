@@ -1,50 +1,3 @@
-X-RAY PNEUMONIA/
-├── .env                                      # Environment configuration file
-├── Integrating Symptoms & Age/              # Feature or module folder
-|   ├── src/
-│   |   ├── bert_trainer.py
-│   |   ├── Symptoms_Diagnosis_Report_dataset.py
-│   |   └── SecondDataset.py                      # Python script for handling a secondary dataset
-|   └──synthetic data/
-│       ├── dataset/                              # Placeholder for synthetic dataset files
-|   └──synthetic data/
-│       ├── dataset/                              # Placeholder for synthetic dataset files
-│       └── model/                                # Placeholder for synthetic model files
-├── LLM-based Report Generation/             # Placeholder for report generation functionality
-├── Pneumonia Prediction/                    # Placeholder for Pneumonia Prediction functionality
-│   ├── dataset/                                 # Dataset folder
-│   ├── test/                                # Test data
-│   │   ├── NORMAL/                          # Normal X-ray images for testing
-│   │   └── PNEUMONIA/                       # Pneumonia X-ray images for testing
-│   ├── train/                               # Training data
-│   │   ├── NORMAL/                          # Normal X-ray images for training
-│   │   └── PNEUMONIA/                       # Pneumonia X-ray images for training
-│   ├── valid/                               # Validation data
-│   │   ├── NORMAL/                          # Normal X-ray images for validation
-│   │   └── PNEUMONIA/                       # Pneumonia X-ray images for validation
-│   ├── valid-mini/                          # Mini validation dataset
-│   │    ├── NORMAL/                          # Normal mini validation data
-│   │    └── PNEUMONIA/                       # Pneumonia mini validation data
-│   ├── model trained/
-│   │    └── chest_xray_model.pth                 # Trained model file (PyTorch format)
-│   └──src/                                     # Source code directory
-│        ├── dataloader.py                        # Script for loading datasets
-│        ├── evaluate_model.py                    # Script for evaluating the trained model
-│        └── train_model.py                       # Script for training the model
-│   ├── valid-mini/                          # Mini validation dataset
-│   │    ├── NORMAL/                          # Normal mini validation data
-│   │    └── PNEUMONIA/                       # Pneumonia mini validation data
-│   ├── model trained/
-│   │    └── chest_xray_model.pth                 # Trained model file (PyTorch format)
-│   └──src/                                     # Source code directory
-│        ├── dataloader.py                        # Script for loading datasets
-│        ├── evaluate_model.py                    # Script for evaluating the trained model
-│        └── train_model.py                       # Script for training the model
-├── Test_JPG/                                # Placeholder for test image files
-├── Readme.md
-└── requirements.txt                         # List of dependencies
-
-
 
 Environment Configuration
 
@@ -91,6 +44,55 @@ The Readme.md file should outline the purpose of your project, how to set up the
 requirements.txt:
 
 This file lists all the dependencies your project requires. Ensure you list packages like torch, torchvision, pandas, scikit-learn, and any other libraries essential for your model and data processing.
+
+
+
+X-RAY PNEUMONIA/
+├── .env                                      # Environment configuration file
+├── Integrating Symptoms & Age/              # Feature or module folder
+|   ├── src/
+│   |   ├── bert_trainer.py
+│   |   ├── Symptoms_Diagnosis_Report_dataset.py
+│   |   └── SecondDataset.py                      # Python script for handling a secondary dataset
+|   └──synthetic data/
+│       ├── dataset/                              # Placeholder for synthetic dataset files
+|   └──synthetic data/
+│       ├── dataset/                              # Placeholder for synthetic dataset files
+│       └── model/                                # Placeholder for synthetic model files
+├── LLM-based Report Generation/             # Placeholder for report generation functionality
+├── Pneumonia Prediction/                    # Placeholder for Pneumonia Prediction functionality
+│   ├── dataset/                                 # Dataset folder
+│   ├── test/                                # Test data
+│   │   ├── NORMAL/                          # Normal X-ray images for testing
+│   │   └── PNEUMONIA/                       # Pneumonia X-ray images for testing
+│   ├── train/                               # Training data
+│   │   ├── NORMAL/                          # Normal X-ray images for training
+│   │   └── PNEUMONIA/                       # Pneumonia X-ray images for training
+│   ├── valid/                               # Validation data
+│   │   ├── NORMAL/                          # Normal X-ray images for validation
+│   │   └── PNEUMONIA/                       # Pneumonia X-ray images for validation
+│   ├── valid-mini/                          # Mini validation dataset
+│   │    ├── NORMAL/                          # Normal mini validation data
+│   │    └── PNEUMONIA/                       # Pneumonia mini validation data
+│   ├── model trained/
+│   │    └── chest_xray_model.pth                 # Trained model file (PyTorch format)
+│   └──src/                                     # Source code directory
+│        ├── dataloader.py                        # Script for loading datasets
+│        ├── evaluate_model.py                    # Script for evaluating the trained model
+│        └── train_model.py                       # Script for training the model
+│   ├── valid-mini/                          # Mini validation dataset
+│   │    ├── NORMAL/                          # Normal mini validation data
+│   │    └── PNEUMONIA/                       # Pneumonia mini validation data
+│   ├── model trained/
+│   │    └── chest_xray_model.pth                 # Trained model file (PyTorch format)
+│   └──src/                                     # Source code directory
+│        ├── dataloader.py                        # Script for loading datasets
+│        ├── evaluate_model.py                    # Script for evaluating the trained model
+│        └── train_model.py                       # Script for training the model
+├── Test_JPG/                                # Placeholder for test image files
+├── Readme.md
+└── requirements.txt                         # List of dependencies
+
 
 
 
